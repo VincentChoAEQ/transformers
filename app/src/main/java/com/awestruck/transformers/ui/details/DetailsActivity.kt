@@ -2,25 +2,30 @@ package com.awestruck.transformers.ui.details
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionManager
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.PopupMenu
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.awestruck.transformers.MainActivity
 import com.awestruck.transformers.R
+import com.awestruck.transformers.model.LocalTransformer
 import com.awestruck.transformers.model.Transformer
 import com.awestruck.transformers.networking.TransformerService
 import com.awestruck.transformers.ui.StatView
@@ -28,59 +33,33 @@ import com.awestruck.transformers.util.TEAM_AUTOBOT
 import com.awestruck.transformers.util.TEAM_DECEPTICON
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.details_fragment.*
-import kotlinx.android.synthetic.main.details_fragment.view.*
+import kotlinx.android.synthetic.main.details_activity.*
 import kotlinx.android.synthetic.main.view_stat.view.*
 
-class DetailsFragment : Fragment() {
+class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
     companion object {
-
 
         private const val BACKGROUND_TRANSITION_DURATION = 150
         private const val EXTRA_TRANSFORMER = "EXTRA_TRANSFORMER"
 
-
-        fun newInstance(transformer: Transformer?): DetailsFragment {
-            val fragment = DetailsFragment()
-
-            val bundle = Bundle()
-            bundle.putParcelable(EXTRA_TRANSFORMER, transformer)
-            fragment.arguments = bundle
-
-            return fragment
+        fun startActivity(context: Context, transformer: Transformer?) {
+            val intent = Intent(context, DetailsActivity::class.java)
+            intent.putExtra(EXTRA_TRANSFORMER, transformer)
+            context.startActivity(intent)
         }
     }
 
     private lateinit var viewModel: DetailsViewModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+        setContentView(R.layout.details_activity)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+        val transformer = intent.getParcelableExtra<Transformer>(EXTRA_TRANSFORMER)
 
-        val view = inflater.inflate(R.layout.details_fragment, container, false)
-        val activity = activity as? AppCompatActivity
-        activity?.setSupportActionBar(view.toolbar)
-        activity?.supportActionBar?.setDisplayShowTitleEnabled(false)
-        return view
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.details_edit, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        val arg = arguments?.getParcelable(EXTRA_TRANSFORMER) as? Transformer
-
-        viewModel = ViewModelProviders.of(this, DetailsViewModelFactory(arg)).get(DetailsViewModel::class.java)
-
+        viewModel = ViewModelProviders.of(this, DetailsViewModelFactory(transformer)).get(DetailsViewModel::class.java)
         viewModel.state.observe(this, Observer {
             setEditMode(it)
         })
@@ -110,7 +89,7 @@ class DetailsFragment : Fragment() {
         })
 
         viewModel.transformer.stats.forEachIndexed { index, stat ->
-            val view = StatView(context, index, stat)
+            val view = StatView(this, index, stat)
 
             view.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(p0: SeekBar?, value: Int, p2: Boolean) {
@@ -126,18 +105,33 @@ class DetailsFragment : Fragment() {
             stats.addView(view)
         }
 
+        close.setOnClickListener {
+            finish()
+        }
+
+        options.setOnClickListener {
+            val popupMenu = PopupMenu(this, it)
+            popupMenu.inflate(R.menu.details_edit)
+            popupMenu.setOnMenuItemClickListener(this)
+            popupMenu.show()
+        }
 
         save.setOnClickListener {
             saveTransformer()
         }
+
+        fab.setOnClickListener {
+            randomize()
+        }
     }
 
 
-    private fun selectTeam(team: String) {
-        if (team == viewModel.transformer.team) {
-            return
-        }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.details_edit, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
+    private fun selectTeam(team: String) {
         animateTeamIcon(team)
         animateBackgroundColor(team)
 
@@ -148,7 +142,7 @@ class DetailsFragment : Fragment() {
         val color = if (team == TEAM_AUTOBOT) R.color.autobot_light else R.color.decepticon_light
 
         val colorFrom = (root.background as ColorDrawable).color
-        val colorTo = ContextCompat.getColor(context ?: return, color)
+        val colorTo = ContextCompat.getColor(this, color)
         val animation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
         animation.duration = BACKGROUND_TRANSITION_DURATION.toLong()
         animation.addUpdateListener { animator -> root.setBackgroundColor(animator.animatedValue as Int) }
@@ -156,7 +150,6 @@ class DetailsFragment : Fragment() {
     }
 
     private fun animateTeamIcon(team: String) {
-        val context = context ?: return
 
 
         val constraint = ConstraintSet()
@@ -169,9 +162,9 @@ class DetailsFragment : Fragment() {
         val endSide = if (team == TEAM_AUTOBOT) ConstraintSet.END else ConstraintSet.START
 
 
-        val size = context.resources.getDimension(R.dimen.icon_size).toInt()
-        val smallSize = context.resources.getDimension(R.dimen.icon_size_small).toInt()
-        val margin = context.resources.getDimension(R.dimen.icon_margin).toInt()
+        val size = resources.getDimension(R.dimen.icon_size).toInt()
+        val smallSize = resources.getDimension(R.dimen.icon_size_small).toInt()
+        val margin = resources.getDimension(R.dimen.icon_margin).toInt()
 
         constraint.clear(selected)
         constraint.constrainHeight(selected, size)
@@ -193,16 +186,19 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+
+        return when (item?.itemId) {
             R.id.action_edit -> {
                 viewModel.state.value = DetailsViewModel.STATE_EDIT
+                true
             }
             R.id.action_delete -> {
                 deleteTransformer()
+                true
             }
+            else -> false
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun deleteTransformer() {
@@ -214,46 +210,58 @@ class DetailsFragment : Fragment() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show()
                     MainActivity.deleteTransformer(id)
                     finish()
                 }, {
-                    Toast.makeText(context, "Error while deleting the transformer", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error while deleting the transformer", Toast.LENGTH_SHORT).show()
                     MainActivity.deleteTransformer(id)
                     finish()
                 })
 
-    }
-
-    private fun finish() {
-        (activity as? MainActivity)?.showList()
     }
 
     private fun saveTransformer() {
+        val transformer = viewModel.transformer
 
-        if (viewModel.transformer.name.isBlank()) {
-            Toast.makeText(context, "Transformer must have a valid name", Toast.LENGTH_SHORT).show()
+        if (transformer.name.isBlank()) {
+            Toast.makeText(this, "Transformer must have a valid name", Toast.LENGTH_SHORT).show()
             return
         }
 
+        if (transformer.id != null) {
+            updateTransformer(transformer)
+        } else {
+            createTransformer(transformer)
+        }
+    }
+
+    private fun createTransformer(transformer: LocalTransformer) {
         TransformerService.create()
-                .add(viewModel.transformer.toTransformer())
+                .add(transformer.toTransformer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
-
-                    val value = MainActivity.transformers.value?.toMutableList() ?: arrayListOf()
-                    value.add(it)
-
-                    MainActivity.transformers.postValue(value)
-
-                    finish()
+                    Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
+                    MainActivity.addTransformer(it)
+                    viewModel.state.postValue(DetailsViewModel.STATE_VIEW)
                 }, {
-                    Toast.makeText(context, "Could not save the transformer", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Could not create the transformer", Toast.LENGTH_SHORT).show()
                 })
+    }
 
-
+    private fun updateTransformer(transformer: LocalTransformer) {
+        TransformerService.create()
+                .update(transformer.toTransformer())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
+                    MainActivity.updateTransformer(it)
+                    viewModel.state.postValue(DetailsViewModel.STATE_VIEW)
+                }, {
+                    Toast.makeText(this, "Could not update the transformer", Toast.LENGTH_SHORT).show()
+                })
     }
 
     private fun setEditMode(state: Int) {
@@ -268,6 +276,8 @@ class DetailsFragment : Fragment() {
                 view.disable()
             }
         }
+
+        options.visibility = if (state == DetailsViewModel.STATE_VIEW) View.VISIBLE else View.GONE
 
         save.visibility = if (isEditing) View.VISIBLE else View.INVISIBLE
 
@@ -284,6 +294,19 @@ class DetailsFragment : Fragment() {
         }
 
         name.isEnabled = isEditing
+    }
+
+    fun randomize() {
+        viewModel.transformer.let { transformer ->
+            transformer.randomize()
+
+            name.setText(transformer.name)
+            selectTeam(transformer.team)
+
+            transformer.stats.forEachIndexed { index, value ->
+                (stats.getChildAt(index) as StatView).setValue(value)
+            }
+        }
     }
 
 

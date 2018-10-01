@@ -1,5 +1,9 @@
 package com.awestruck.transformers.model
 
+import com.awestruck.transformers.util.TEAM_AUTOBOT
+import com.awestruck.transformers.util.TEAM_DECEPTICON
+import java.util.*
+
 /**
  * Created by Chris on 2018-09-29.
  */
@@ -16,8 +20,10 @@ class LocalTransformer(transformer: Transformer) {
         const val FIREPOWER = 6
         const val SKILL = 7
 
-        private const val SKILLS_SIZE = 8
+        const val SKILLS_SIZE = 8
         private const val SKILLS_DEFAULT = 1
+        const val SKILLS_MAX = 10
+        const val SKILLS_MIN = 1
     }
 
     val id = transformer.id
@@ -39,6 +45,22 @@ class LocalTransformer(transformer: Transformer) {
         stats[COURAGE] = transformer.courage
         stats[FIREPOWER] = transformer.firepower
         stats[SKILL] = transformer.skill
+    }
+
+    fun randomize() {
+        val random = Random()
+
+        val names = listOf("Optimus Prime", "PREDAKING", "Rat Trap", "Solaire", "Ash",
+                "Cyrpto", "Cena", "Vlad the Impaler", "HULK", "Batman", "Megatron", "Megatron v2.0", "UNKNOWN")
+
+        name = names[random.nextInt(names.size)]
+
+        team = if (random.nextBoolean()) TEAM_AUTOBOT else TEAM_DECEPTICON
+
+        for (i in 0 until SKILLS_SIZE) {
+            val value = SKILLS_MIN + random.nextInt(SKILLS_MAX - SKILLS_MIN)
+            stats[i] = value
+        }
     }
 
     fun toTransformer(): Transformer {

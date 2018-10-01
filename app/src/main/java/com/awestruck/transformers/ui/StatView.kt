@@ -49,5 +49,6 @@ class StatView(context: Context?, index: Int, value: Int) : LinearLayout(context
 
     fun setValue(value: Int) {
         progress.progress = value
+        seek.progress = value
     }
 }

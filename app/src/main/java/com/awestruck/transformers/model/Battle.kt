@@ -18,6 +18,7 @@ class Battle(transformers: List<Transformer>) {
 
     val victor: String
 
+    val results = ArrayList<BattleResult>()
 
     init {
 
@@ -42,6 +43,9 @@ class Battle(transformers: List<Transformer>) {
                     // TODO: Handle this.
                 }
             }
+
+            results.add(BattleResult(autobot, decepticon, winner))
+
         }
 
         victor = when {
@@ -50,7 +54,6 @@ class Battle(transformers: List<Transformer>) {
             else -> NO_WINNER
         }
     }
-
 
 
     companion object {
@@ -96,7 +99,7 @@ class Battle(transformers: List<Transformer>) {
         fun isIntimidating(lhs: Transformer, rhs: Transformer) = lhs.courage - 4 >= rhs.courage
 
         @VisibleForTesting
-        fun isTooSkilled(lhs: Transformer, rhs:Transformer) = lhs.skill -3 >= rhs.skill
+        fun isTooSkilled(lhs: Transformer, rhs: Transformer) = lhs.skill - 3 >= rhs.skill
 
         @VisibleForTesting
         fun equalPower(lhs: Transformer, rhs: Transformer) = lhs.overallRating == rhs.overallRating

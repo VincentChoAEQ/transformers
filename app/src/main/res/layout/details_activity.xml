@@ -7,9 +7,10 @@
     android:layout_height="match_parent"
     android:background="@color/autobot_light">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,19 +18,13 @@
             android:clipToPadding="false"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:layout_marginTop="48dp"
-                android:background="@android:color/transparent" />
 
             <LinearLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="16dp">
+                android:paddingTop="80dp">
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +32,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    tools:showIn="@layout/details_fragment">
+                    tools:showIn="@layout/details_activity">
 
                     <ImageView
                         android:id="@+id/icon_autobot"
@@ -102,7 +97,42 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
+
+
+    <FrameLayout
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true">
+
+        <ImageButton
+            android:id="@+id/close"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_close_white_24dp" />
+
+
+        <ImageButton
+            android:id="@+id/options"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_more_vert_white_24dp" />
+
+    </FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_perspective_dice_six_faces_six"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
