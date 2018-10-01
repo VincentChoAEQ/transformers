@@ -23,11 +23,10 @@ data class Transformer(
         @SerializedName("team") val team: String,
         @SerializedName("team_icon") val icon: String? = null
 ) : Parcelable {
-    constructor(name: String,
-                strength: Int, intelligence: Int, speed: Int,
-                endurance: Int, rank: Int, courage: Int, firepower: Int, skill: Int,
-                team: String) : this(null, name, strength, intelligence, speed, endurance, rank, courage, firepower, skill, team, "")
 
+    constructor(name: String, average: Int, team: String)
+            : this(null, name, average, average, average, average, average, average, average, average, team)
+    
     fun isLeader(): Boolean {
         return when (name.toLowerCase()) {
             "optimus prime",

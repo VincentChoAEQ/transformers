@@ -16,14 +16,14 @@ import org.junit.Test
  */
 class BattleUnitTest {
 
-    private val optimus = Transformer("Optimus Prime", 10, 10, 8, 10, 10, 10, 8, 10, TEAM_AUTOBOT)
-    private val predaking = Transformer("PREDAKING", 10, 5, 10, 8, 7, 9, 9, 8, TEAM_DECEPTICON)
+    private val optimus = Transformer("Optimus Prime", 10, TEAM_AUTOBOT)
+    private val predaking = Transformer("PREDAKING", 10, TEAM_DECEPTICON)
 
-    private val weakAutobot = Transformer("Weak Autobot", 1, 2, 1, 3, 2, 5, 1, 2, TEAM_AUTOBOT)
-    private val weakDecepticon = Transformer("Weak Deception", 1, 2, 1, 3, 2, 5, 1, 2, TEAM_DECEPTICON)
+    private val weakAutobot = Transformer("Weak Autobot", 1, TEAM_AUTOBOT)
+    private val weakDecepticon = Transformer("Weak Deception", 1, TEAM_DECEPTICON)
 
-    private val strongAutobot = Transformer("Strong Autobot", 10, 8, 8, 7, 10, 8, 9, 8, TEAM_AUTOBOT)
-    private val strongDecepticon = Transformer("Strong Deception", 10, 8, 8, 7, 10, 8, 9, 8, TEAM_DECEPTICON)
+    private val strongAutobot = Transformer("Strong Autobot", 10, TEAM_AUTOBOT)
+    private val strongDecepticon = Transformer("Strong Deception", 10, TEAM_DECEPTICON)
 
 
     @Test
@@ -34,7 +34,7 @@ class BattleUnitTest {
 
     @Test
     fun `test is not leader`() {
-        val nonLeader = Transformer("other", 1, 1, 1, 1, 1, 1, 1, 1, "A")
+        val nonLeader = Transformer("other", 1, "A")
         assertEquals(nonLeader.isLeader(), false)
     }
 
