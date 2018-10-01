@@ -127,6 +127,10 @@ class DetailsFragment : Fragment() {
             stats.addView(view)
         }
 
+
+        save.setOnClickListener {
+            saveTransformer()
+        }
     }
 
 
@@ -262,7 +266,7 @@ class DetailsFragment : Fragment() {
 
         for (i in 0 until stats.childCount) {
             val view = stats.getChildAt(i) as StatView
-            if(isEditing) {
+            if (isEditing) {
                 view.enable()
             } else {
                 view.disable()
@@ -275,6 +279,20 @@ class DetailsFragment : Fragment() {
             DetailsViewModel.STATE_CREATE -> context?.getString(R.string.create_transformer)
             DetailsViewModel.STATE_EDIT -> context?.getString(R.string.edit_transformer)
             else -> context?.getString(R.string.view_transformer)
+        }
+
+        save.visibility = if (isEditing) View.VISIBLE else View.INVISIBLE
+
+        if (isEditing) {
+            icon_autobot.visibility = View.VISIBLE
+            icon_decepticon.visibility = View.VISIBLE
+        } else {
+            val team = viewModel.transformer.team
+            if (team == TEAM_AUTOBOT) {
+                icon_decepticon.visibility = View.GONE
+            } else {
+                icon_autobot.visibility = View.GONE
+            }
         }
 
         name.isEnabled = isEditing

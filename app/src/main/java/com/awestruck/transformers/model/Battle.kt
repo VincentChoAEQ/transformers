@@ -11,8 +11,8 @@ import com.awestruck.transformers.util.TEAM_DECEPTICON
  */
 class Battle(transformers: List<Transformer>) {
 
-    val autobots = transformers.filter { it.isAutobot }.sortedBy { it.rank }
-    val decepticons = transformers.filter { it.isDecepticon }.sortedBy { it.rank }
+    val autobots = transformers.filter { it.isAutobot }.sortedByDescending { it.rank }
+    val decepticons = transformers.filter { it.isDecepticon }.sortedByDescending { it.rank }
 
     val battles = Math.min(autobots.size, decepticons.size)
 

@@ -1,16 +1,26 @@
 <resources>
     <string name="app_name">Transformers</string>
-    <string name="edit">Edit</string>
-    <string name="save">Save</string>
-    <string name="edit_transformer">Edit Transformer</string>
-    <string name="create_transformer">Create Transformer</string>
+
     <string name="autobots">Autobots</string>
     <string name="decepticons">Decepticons</string>
+
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
+
+    <string name="create_transformer">Create Transformer</string>
+    <string name="view_transformer">View Transformer</string>
+    <string name="edit_transformer">Edit Transformer</string>
+
+
     <string name="name_hint">Megatron</string>
     <string name="delete">Delete</string>
-    <string name="view_transformer">View Transformer</string>
+
+
+    <string name="start_battle">Start Battle</string>
+
+
+    <!-- Stats -->
     <string name="strength">Strength</string>
-    <string name="unknown">Unknown</string>
     <string name="intelligence">Intelligence</string>
     <string name="speed">Speed</string>
     <string name="endurance">Endurance</string>
@@ -18,4 +28,7 @@
     <string name="courage">Courage</string>
     <string name="firepower">Firepower</string>
     <string name="skill">Skill</string>
+    <string name="unknown">Unknown</string>
+    <string name="battle">Battle</string>
+    <string name="vs">vs</string>
 </resources>

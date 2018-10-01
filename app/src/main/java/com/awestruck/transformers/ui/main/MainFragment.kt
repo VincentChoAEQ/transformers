@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import com.awestruck.transformers.MainActivity
 import com.awestruck.transformers.R
 import com.awestruck.transformers.ui.list.ListFragment
 import com.awestruck.transformers.util.TEAM_AUTOBOT
@@ -66,6 +67,10 @@ class MainFragment : Fragment() {
                 animateHeader(team)
             }
         })
+
+        battle.setOnClickListener {
+            (activity as? MainActivity)?.startBattle()
+        }
     }
 
     private fun animateHeader(team: String) {

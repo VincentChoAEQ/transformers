@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MediatorLiveData
+import com.awestruck.transformers.model.Battle
 import com.awestruck.transformers.model.LocalTransformer
 import com.awestruck.transformers.model.Transformer
 import com.awestruck.transformers.networking.TransformerService
+import com.awestruck.transformers.ui.battle.BattleFragment
 import com.awestruck.transformers.ui.details.DetailsFragment
 import com.awestruck.transformers.ui.details.MainFragment
 import com.awestruck.transformers.ui.list.ListFragment
@@ -65,6 +67,15 @@ class MainActivity : AppCompatActivity() {
         fab.hide()
     }
 
+    fun startBattle() {
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.container, BattleFragment.newInstance())
+                .addToBackStack("battle_fragment")
+                .commit()
+
+        fab.hide()
+    }
+
     private fun getToken() {
         TransformerService.create()
                 .getAllSpark()
@@ -94,4 +105,6 @@ class MainActivity : AppCompatActivity() {
                     Logger.e(it, "Could not work.")
                 })
     }
+
+
 }
