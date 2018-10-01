@@ -53,7 +53,6 @@ class DetailsFragment : Fragment() {
     }
 
     private lateinit var viewModel: DetailsViewModel
-    private var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,14 +63,14 @@ class DetailsFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
 
         val view = inflater.inflate(R.layout.details_fragment, container, false)
-        (activity as? AppCompatActivity)?.setSupportActionBar(view.toolbar)
+        val activity = activity as? AppCompatActivity
+        activity?.setSupportActionBar(view.toolbar)
+        activity?.supportActionBar?.setDisplayShowTitleEnabled(false)
         return view
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.details_edit, menu)
-        this.menu = menu
-        updateMenu(isEditing = viewModel.isEditing)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -199,9 +198,6 @@ class DetailsFragment : Fragment() {
             R.id.action_edit -> {
                 viewModel.state.value = DetailsViewModel.STATE_EDIT
             }
-            R.id.action_save -> {
-                saveTransformer()
-            }
             R.id.action_delete -> {
                 deleteTransformer()
             }
@@ -273,14 +269,6 @@ class DetailsFragment : Fragment() {
             }
         }
 
-        updateMenu(isEditing)
-
-        toolbar.title = when (state) {
-            DetailsViewModel.STATE_CREATE -> context?.getString(R.string.create_transformer)
-            DetailsViewModel.STATE_EDIT -> context?.getString(R.string.edit_transformer)
-            else -> context?.getString(R.string.view_transformer)
-        }
-
         save.visibility = if (isEditing) View.VISIBLE else View.INVISIBLE
 
         if (isEditing) {
@@ -296,12 +284,6 @@ class DetailsFragment : Fragment() {
         }
 
         name.isEnabled = isEditing
-    }
-
-    private fun updateMenu(isEditing: Boolean) {
-        menu?.findItem(R.id.action_edit)?.isVisible = !isEditing
-        menu?.findItem(R.id.action_delete)?.isVisible = !isEditing
-        menu?.findItem(R.id.action_save)?.isVisible = isEditing
     }
 
 
