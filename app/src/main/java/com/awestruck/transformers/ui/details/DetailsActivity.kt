@@ -277,6 +277,12 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
             }
         }
 
+        if (isEditing) {
+            fab.show()
+        } else {
+            fab.hide()
+        }
+
         options.visibility = if (state == DetailsViewModel.STATE_VIEW) View.VISIBLE else View.GONE
 
         save.visibility = if (isEditing) View.VISIBLE else View.INVISIBLE
