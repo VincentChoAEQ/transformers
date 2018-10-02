@@ -50,4 +50,5 @@
     <string name="battle_draw">DRAW</string>
     <string name="battle_victory_autobots">AUTOBOTS WIN</string>
     <string name="battle_victory_decepticons">DECEPTICONS WIN</string>
+    <string name="battle_empty">You look around, the battlefield is empty. Did you get the wrong address?\n\nMaybe we should come back when we have two teams to fight.</string>
 </resources>

@@ -63,6 +63,17 @@ class BattleActivity : AppCompatActivity() {
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = adapter
 
+
+
+        if (battle.results.size == 0) {
+            adapter.addNotification(BattleAdapter.BattleNotification(getString(R.string.battle_empty)))
+            announceWinner(battle)
+        } else {
+            setupBattleMessageTimer(battle)
+        }
+    }
+
+    private fun setupBattleMessageTimer(battle: Battle) {
         var index = 0
 
         var lhs = 0
@@ -105,7 +116,6 @@ class BattleActivity : AppCompatActivity() {
         }
 
         timer.scheduleAtFixedRate(task, delay, delay)
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
