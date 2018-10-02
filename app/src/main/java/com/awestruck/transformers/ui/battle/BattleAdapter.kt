@@ -1,63 +1,121 @@
 package com.awestruck.transformers.ui.battle
 
+import android.content.Context
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.awestruck.transformers.R
-import com.awestruck.transformers.model.Battle
-import com.awestruck.transformers.model.Transformer
+import com.awestruck.transformers.model.BattleResult
+import com.awestruck.transformers.util.MASS_EXTINCTION
 import com.awestruck.transformers.util.NO_WINNER
 import com.awestruck.transformers.util.TEAM_AUTOBOT
-import com.awestruck.transformers.util.TEAM_DECEPTICON
+import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.item_battle.view.*
+import kotlinx.android.synthetic.main.item_battle_notification.view.*
 
 /**
  * Created by Chris on 2018-10-01.
  */
-class BattleAdapter : RecyclerView.Adapter<BattleAdapter.ViewHolder>() {
+class BattleAdapter(private val context: Context) : RecyclerView.Adapter<BattleAdapter.ViewHolder>() {
 
-    private val battles = ArrayList<Pair<Transformer, Boolean>>()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_battle, parent, false)
-        return ViewHolder(view)
+    companion object {
+        private const val TYPE_MESSAGE = 0
+        private const val TYPE_BATTLE = 1
     }
 
-    override fun getItemCount() = battles.size
+    private val collection = ArrayList<Any>()
+
+    init {
+        collection.add(BattleNotification(context.getString(R.string.battle_start)))
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return if (viewType == TYPE_BATTLE) {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_battle, parent, false)
+            ViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_battle_notification, parent, false)
+            ViewHolder(view)
+        }
+    }
+
+
+    override fun getItemViewType(position: Int): Int {
+        return if( collection[position] is BattleResult ) {
+            TYPE_BATTLE
+        } else {
+            TYPE_MESSAGE
+        }
+    }
+
+    override fun getItemCount() = collection.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val transformer = battles[position]
+        if (holder.itemViewType == TYPE_BATTLE) {
+            val result = collection[position] as BattleResult
 
-        holder.view.name.text = transformer.first.name
+            val span = if (result.result == NO_WINNER) {
+                getDrawSpan(result)
+            } else {
+                getWinnerSpan(result)
+            }
 
-        holder.view.destroyed.visibility = if (transformer.second) View.VISIBLE else View.GONE
+            holder.view.name.text = span
+        } else {
+            holder.view.message.text = (collection[position] as BattleNotification).text
+        }
 
 
     }
 
+    private fun getDrawSpan(result: BattleResult): SpannableString {
+        val lhs = result.lhs.name
+        val rhs = result.rhs.name
 
-    fun addBattle(lhs: Transformer, rhs: Transformer) {
-        var lhsDestroyed = false
-        var rhsDestroyed = false
+        val text = "Both $lhs and $rhs were destroyed!"
 
-        val winner = Battle.getWinner(lhs, rhs)
-        when (winner) {
-            TEAM_AUTOBOT -> rhsDestroyed = true
-            TEAM_DECEPTICON -> lhsDestroyed = true
-            NO_WINNER -> {
-                lhsDestroyed = true
-                rhsDestroyed = true
-            }
-        }
+        val span = SpannableString(text)
+        setSpan(span, R.color.autobot_light, lhs)
+        setSpan(span, R.color.decepticon_light, rhs)
+        return span
+    }
+
+    private fun getWinnerSpan(result: BattleResult): SpannableString {
+        val lhs = if (result.result == TEAM_AUTOBOT) result.lhs.name else result.rhs.name
+        val rhs = if (result.result == TEAM_AUTOBOT) result.rhs.name else result.lhs.name
+
+        val text = "$lhs has destroyed $rhs!"
+
+        val span = SpannableString(text)
+        setSpan(span, R.color.autobot_light, result.lhs.name)
+        setSpan(span, R.color.decepticon_light, result.rhs.name)
+        return span
+    }
+
+    private fun setSpan(span: SpannableString, color: Int, text: String) {
+        val start = span.indexOf(text)
+        span.setSpan(ForegroundColorSpan(ContextCompat.getColor(context, color)), start, start + text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
 
 
-        battles.add(0, lhs to lhsDestroyed)
-        battles.add(1, rhs to rhsDestroyed)
-        notifyItemRangeInserted(0, 2)
+    fun addNotification(notification: BattleNotification) {
+        collection.add(0, notification)
+        notifyItemRangeInserted(0, 1)
+    }
+
+    fun addBattle(result: BattleResult) {
+        collection.add(0, result)
+        notifyItemRangeInserted(0, 1)
     }
 
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+
+    class BattleNotification(val text: String)
 }

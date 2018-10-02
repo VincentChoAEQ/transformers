@@ -44,4 +44,7 @@
     <string name="battle">Battle</string>
     <string name="vs">vs</string>
     <string name="app_subtitle">War for Cybertron</string>
+    <string name="battle_start">BEGIN BATTLE</string>
+    <string name="battle_mass_extinction">MASS EXTINCTION</string>
+    <string name="battle_end">BATTLE END</string>
 </resources>

@@ -23,6 +23,8 @@
         </activity>
 
         <activity android:name=".ui.details.DetailsActivity" />
+
+        <activity android:name=".ui.battle.BattleActivity" android:exported="true" />
     </application>
 
 </manifest>

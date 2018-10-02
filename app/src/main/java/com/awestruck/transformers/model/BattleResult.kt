@@ -6,5 +6,5 @@ package com.awestruck.transformers.model
 data class BattleResult(
         val lhs: Transformer,
         val rhs: Transformer,
-        val result: String
+        var result: String
 )

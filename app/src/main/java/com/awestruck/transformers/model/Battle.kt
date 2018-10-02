@@ -18,7 +18,6 @@ class Battle(transformers: List<Transformer>) {
     val autobots = transformers.filter { it.isAutobot }.sortedByDescending { it[RANK] }
     val decepticons = transformers.filter { it.isDecepticon }.sortedByDescending { it[RANK] }
 
-    val battles = Math.min(autobots.size, decepticons.size)
 
     val victor: String
 
@@ -26,35 +25,36 @@ class Battle(transformers: List<Transformer>) {
 
     init {
 
-        var autobotsDestroyed = 0
-        var decepticonsDestroyed = 0
+        val battles = Math.min(autobots.size, decepticons.size)
+
+        var isMassExtinction = false
 
         for (i in 0 until battles) {
             val autobot = autobots[i]
             val decepticon = decepticons[i]
 
-            val winner = getWinner(autobot, decepticon)
-
-            when (winner) {
-                TEAM_AUTOBOT -> decepticonsDestroyed++
-                TEAM_DECEPTICON -> autobotsDestroyed++
-                NO_WINNER -> {
-                    autobotsDestroyed++
-                    decepticonsDestroyed++
-                }
-
-                MASS_EXTINCTION -> {
-                    // TODO: Handle this.
-                }
+            val winner = if (isMassExtinction) {
+                MASS_EXTINCTION
+            } else {
+                getWinner(autobot, decepticon)
             }
 
-            results.add(BattleResult(autobot, decepticon, winner))
-
+            if (winner == MASS_EXTINCTION) {
+                isMassExtinction = true
+                results.add(0, BattleResult(autobot, decepticon, winner))
+                results.forEach { it.result = MASS_EXTINCTION }
+            } else {
+                results.add(BattleResult(autobot, decepticon, winner))
+            }
         }
 
+        val lhs = results.count { it.result == TEAM_AUTOBOT }
+        val rhs = results.count { it.result == TEAM_DECEPTICON }
+
         victor = when {
-            autobotsDestroyed < decepticonsDestroyed -> TEAM_AUTOBOT
-            autobotsDestroyed > decepticonsDestroyed -> TEAM_DECEPTICON
+            isMassExtinction -> MASS_EXTINCTION
+            lhs > rhs -> TEAM_AUTOBOT
+            lhs < rhs -> TEAM_DECEPTICON
             else -> NO_WINNER
         }
     }

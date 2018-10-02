@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MediatorLiveData
 import com.awestruck.transformers.model.Transformer
 import com.awestruck.transformers.networking.TransformerService
-import com.awestruck.transformers.ui.battle.BattleFragment
+import com.awestruck.transformers.ui.battle.BattleActivity
 import com.awestruck.transformers.ui.details.DetailsActivity
 import com.awestruck.transformers.ui.details.MainFragment
 import com.awestruck.transformers.ui.splash.SplashFragment
@@ -41,10 +41,6 @@ class MainActivity : AppCompatActivity() {
         val transformers = MediatorLiveData<List<Transformer>>()
     }
 
-
-    private val mainFragment = MainFragment.newInstance()
-    private var detailsFragment: DetailsActivity? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -59,67 +55,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         fab.setOnClickListener {
-            if (showingDetails()) {
-                randomizeDetails()
-            } else {
-                showDetails()
-            }
+            showDetails()
         }
-    }
-
-    private fun showingDetails() = detailsFragment != null
-
-    private fun randomizeDetails() {
-        detailsFragment?.randomize()
     }
 
     private fun showInitialScreen() {
-        if (Preferences.isNewUser) {
-            showSplash()
-        } else {
-            showMain()
-        }
-    }
-
-    private fun showSplash() {
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.container, SplashFragment.newInstance())
-                .commitNow()
+        showMain()
     }
 
     private fun showMain() {
         supportFragmentManager.beginTransaction()
-                .replace(R.id.container, mainFragment)
+                .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
-    }
-
-    fun showList() {
-        supportFragmentManager.popBackStackImmediate()
-
-        fab.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
-            override fun onHidden(fab: FloatingActionButton?) {
-                super.onHidden(fab)
-                fab?.setImageResource(R.drawable.ic_add_black_24dp)
-                fab?.show()
-            }
-        })
-    }
-
-    override fun onBackPressed() {
-        if (detailsFragment != null) {
-            detailsFragment = null
-        }
-
-        fab.hide(object : FloatingActionButton.OnVisibilityChangedListener() {
-            override fun onHidden(fab: FloatingActionButton?) {
-                super.onHidden(fab)
-                fab?.setImageResource(R.drawable.ic_add_black_24dp)
-                fab?.show()
-            }
-        })
-
-
-        super.onBackPressed()
     }
 
     fun showDetails(transformer: Transformer? = null) {
@@ -127,12 +74,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startBattle() {
-        supportFragmentManager.beginTransaction()
-                .replace(R.id.container, BattleFragment.newInstance())
-                .addToBackStack("battle_fragment")
-                .commit()
-
-        fab.hide()
+        BattleActivity.startActivity(this)
     }
 
     private fun getToken() {
@@ -161,6 +103,4 @@ class MainActivity : AppCompatActivity() {
                     Logger.e(it, "Could not work.")
                 })
     }
-
-
 }
