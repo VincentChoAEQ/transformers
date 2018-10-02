@@ -35,8 +35,8 @@ class BattleUnitTest {
 
     @Test
     fun `test overall rating`() {
-        assertEquals(optimus.total, 46)
-        assertEquals(predaking.total, 42)
+        assertEquals(optimus.total, 50)
+        assertEquals(predaking.total, 50)
     }
 
     @Test
