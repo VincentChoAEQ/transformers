@@ -56,7 +56,7 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.details_activity)
 
-        val transformer = intent.getSerializableExtra(EXTRA_TRANSFORMER) as Transformer
+        val transformer = intent.getSerializableExtra(EXTRA_TRANSFORMER) as? Transformer
 
         viewModel = ViewModelProviders.of(this, DetailsViewModelFactory(transformer)).get(DetailsViewModel::class.java)
         viewModel.state.observe(this, Observer {
@@ -92,6 +92,7 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
             view.seek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(p0: SeekBar?, value: Int, p2: Boolean) {
+                    val value = Math.max(Transformer.SKILLS_MIN, value)
                     viewModel.transformer.stats[index] = value
                     view.setValue(value)
                 }

@@ -33,6 +33,7 @@ class StatView(context: Context?, index: Int, value: Int) : LinearLayout(context
         view.name.setText(name)
         view.seek.progress = value
         view.progress.progress = value
+        view.value.text = value.toString()
 
         addView(view)
     }
@@ -47,8 +48,9 @@ class StatView(context: Context?, index: Int, value: Int) : LinearLayout(context
         seek.visibility = View.VISIBLE
     }
 
-    fun setValue(value: Int) {
-        progress.progress = value
-        seek.progress = value
+    fun setValue(v: Int) {
+        progress.progress = v
+        seek.progress = v
+        value.text = v.toString()
     }
 }

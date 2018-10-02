@@ -3,10 +3,12 @@ package com.awestruck.transformers.ui.list
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.awestruck.transformers.R
 import com.awestruck.transformers.model.Transformer
-import com.bumptech.glide.Glide
+import com.awestruck.transformers.ui.StatView
 import kotlinx.android.synthetic.main.item_transformer.view.*
 
 /**
@@ -27,21 +29,16 @@ class ListAdapter(private val onClickListener: OnTransformerClickListener) : Rec
         val transformer = transformers[position]
 
         holder.view.apply {
-            context?.let {
-                Glide.with(it).load(transformer.icon)
-                        .into(icon)
-            }
-
             name.text = transformer.name
             overall_rating.text = transformer.total.toString()
 
-//            stats_container.removeAllViews()
-//
-//            LocalTransformer(transformer).stats.forEachIndexed { index, i ->
-//                val view = StatView(context, index, i)
-//                stats_container.addView(view)
-//            }
+//            val color = if (transformer.isAutobot) R.color.autobot_light else R.color.decepticon_dark
 
+//            card.setCardBackgroundColor(ContextCompat.getColor(context, color))
+
+            val adapter = StatsAdapter(transformer.specs)
+            stats_container.adapter = adapter
+            stats_container.layoutManager = GridLayoutManager(context, 4, RecyclerView.VERTICAL, false)
 
 
             setOnClickListener {

@@ -29,6 +29,18 @@
     <string name="firepower">Firepower</string>
     <string name="skill">Skill</string>
     <string name="unknown">Unknown</string>
+
+    <string name="strength_short">STR</string>
+    <string name="intelligence_short">INT</string>
+    <string name="speed_short">SPD</string>
+    <string name="endurance_short">END</string>
+    <string name="rank_short">RNK</string>
+    <string name="courage_short">CRG</string>
+    <string name="firepower_short">FPR</string>
+    <string name="skill_short">SKL</string>
+    <string name="unknown_short">\???</string>
+    
+    
     <string name="battle">Battle</string>
     <string name="vs">vs</string>
     <string name="app_subtitle">War for Cybertron</string>
