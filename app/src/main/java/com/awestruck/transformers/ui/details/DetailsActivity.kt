@@ -25,7 +25,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.awestruck.transformers.MainActivity
 import com.awestruck.transformers.R
-import com.awestruck.transformers.model.LocalTransformer
 import com.awestruck.transformers.model.Transformer
 import com.awestruck.transformers.networking.TransformerService
 import com.awestruck.transformers.ui.StatView
@@ -57,7 +56,7 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.details_activity)
 
-        val transformer = intent.getParcelableExtra<Transformer>(EXTRA_TRANSFORMER)
+        val transformer = intent.getSerializableExtra(EXTRA_TRANSFORMER) as Transformer
 
         viewModel = ViewModelProviders.of(this, DetailsViewModelFactory(transformer)).get(DetailsViewModel::class.java)
         viewModel.state.observe(this, Observer {
@@ -236,9 +235,9 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private fun createTransformer(transformer: LocalTransformer) {
+    private fun createTransformer(transformer: Transformer) {
         TransformerService.create()
-                .add(transformer.toTransformer())
+                .add(transformer)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -250,9 +249,9 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
                 })
     }
 
-    private fun updateTransformer(transformer: LocalTransformer) {
+    private fun updateTransformer(transformer: Transformer) {
         TransformerService.create()
-                .update(transformer.toTransformer())
+                .update(transformer)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

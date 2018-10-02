@@ -2,7 +2,6 @@ package com.awestruck.transformers.ui.details
 
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModel
-import com.awestruck.transformers.model.LocalTransformer
 import com.awestruck.transformers.model.Transformer
 
 class DetailsViewModel(arg: Transformer?) : ViewModel() {
@@ -15,11 +14,7 @@ class DetailsViewModel(arg: Transformer?) : ViewModel() {
 
     val state = MediatorLiveData<Int>()
 
-    var transformer: LocalTransformer = if (arg != null) {
-        LocalTransformer(arg)
-    } else {
-        LocalTransformer()
-    }
+    var transformer = arg ?: Transformer()
 
     val isEditing: Boolean
         get() = state.value == STATE_CREATE || state.value == STATE_EDIT

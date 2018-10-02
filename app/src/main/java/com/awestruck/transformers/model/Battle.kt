@@ -1,6 +1,10 @@
 package com.awestruck.transformers.model
 
 import androidx.annotation.VisibleForTesting
+import com.awestruck.transformers.model.Transformer.Companion.COURAGE
+import com.awestruck.transformers.model.Transformer.Companion.RANK
+import com.awestruck.transformers.model.Transformer.Companion.SKILL
+import com.awestruck.transformers.model.Transformer.Companion.STRENGTH
 import com.awestruck.transformers.util.MASS_EXTINCTION
 import com.awestruck.transformers.util.NO_WINNER
 import com.awestruck.transformers.util.TEAM_AUTOBOT
@@ -11,8 +15,8 @@ import com.awestruck.transformers.util.TEAM_DECEPTICON
  */
 class Battle(transformers: List<Transformer>) {
 
-    val autobots = transformers.filter { it.isAutobot }.sortedByDescending { it.rank }
-    val decepticons = transformers.filter { it.isDecepticon }.sortedByDescending { it.rank }
+    val autobots = transformers.filter { it.isAutobot }.sortedByDescending { it[RANK] }
+    val decepticons = transformers.filter { it.isDecepticon }.sortedByDescending { it[RANK] }
 
     val battles = Math.min(autobots.size, decepticons.size)
 
@@ -93,18 +97,18 @@ class Battle(transformers: List<Transformer>) {
         }
 
         @VisibleForTesting
-        fun isOverpowering(lhs: Transformer, rhs: Transformer) = lhs.strength >= rhs.strength + 3
+        fun isOverpowering(lhs: Transformer, rhs: Transformer) = lhs[STRENGTH] >= rhs[STRENGTH] + 3
 
         @VisibleForTesting
-        fun isIntimidating(lhs: Transformer, rhs: Transformer) = lhs.courage - 4 >= rhs.courage
+        fun isIntimidating(lhs: Transformer, rhs: Transformer) = lhs[COURAGE] - 4 >= rhs[COURAGE]
 
         @VisibleForTesting
-        fun isTooSkilled(lhs: Transformer, rhs: Transformer) = lhs.skill - 3 >= rhs.skill
+        fun isTooSkilled(lhs: Transformer, rhs: Transformer) = lhs[SKILL] - 3 >= rhs[SKILL]
 
         @VisibleForTesting
-        fun equalPower(lhs: Transformer, rhs: Transformer) = lhs.overallRating == rhs.overallRating
+        fun equalPower(lhs: Transformer, rhs: Transformer) = lhs.total == rhs.total
 
         @VisibleForTesting
-        fun isStronger(lhs: Transformer, rhs: Transformer) = lhs.overallRating > rhs.overallRating
+        fun isStronger(lhs: Transformer, rhs: Transformer) = lhs.total > rhs.total
     }
 }

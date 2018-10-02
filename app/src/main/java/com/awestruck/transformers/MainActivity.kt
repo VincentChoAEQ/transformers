@@ -3,7 +3,6 @@ package com.awestruck.transformers
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MediatorLiveData
-import com.awestruck.transformers.model.LocalTransformer
 import com.awestruck.transformers.model.Transformer
 import com.awestruck.transformers.networking.TransformerService
 import com.awestruck.transformers.ui.battle.BattleFragment
@@ -156,12 +155,7 @@ class MainActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-
-
-                    val local = it.transformers.map { LocalTransformer(it) }
-
                     transformers.postValue(it.transformers)
-
                     showMain()
                 }, {
                     Logger.e(it, "Could not work.")

@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import com.awestruck.transformers.R
-import com.awestruck.transformers.model.LocalTransformer
+import com.awestruck.transformers.model.Transformer
 import kotlinx.android.synthetic.main.view_stat.view.*
 
 /**
@@ -19,14 +19,14 @@ class StatView(context: Context?, index: Int, value: Int) : LinearLayout(context
         view.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
 
         val name = when (index) {
-            LocalTransformer.STRENGTH -> R.string.strength
-            LocalTransformer.INTELLIGENCE -> R.string.intelligence
-            LocalTransformer.SPEED -> R.string.speed
-            LocalTransformer.ENDURANCE -> R.string.endurance
-            LocalTransformer.RANK -> R.string.rank
-            LocalTransformer.COURAGE -> R.string.courage
-            LocalTransformer.FIREPOWER -> R.string.firepower
-            LocalTransformer.SKILL -> R.string.skill
+            Transformer.STRENGTH -> R.string.strength
+            Transformer.INTELLIGENCE -> R.string.intelligence
+            Transformer.SPEED -> R.string.speed
+            Transformer.ENDURANCE -> R.string.endurance
+            Transformer.RANK -> R.string.rank
+            Transformer.COURAGE -> R.string.courage
+            Transformer.FIREPOWER -> R.string.firepower
+            Transformer.SKILL -> R.string.skill
             else -> R.string.unknown
         }
 

@@ -49,7 +49,7 @@ class ListFragment : Fragment(), ListAdapter.OnTransformerClickListener {
 
         viewModel.transformers.observe(this, Observer {
 
-            val team = it.filter { it.team == team }.sortedByDescending { it.overallRating }
+            val team = it.filter { it.team == team }.sortedByDescending { it.total }
 
             adapter.setTransformers(team)
 

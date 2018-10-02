@@ -2,6 +2,8 @@ package com.awestruck.transformers.networking
 
 import com.awestruck.transformers.model.Transformer
 import com.awestruck.transformers.model.Transformers
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -28,11 +30,16 @@ interface TransformerService {
 
             val client = builder.build()
 
+            val gson = GsonBuilder()
+                    .registerTypeAdapter(Transformer::class.java, TransformerDeserializer())
+                    .registerTypeAdapter(Transformer::class.java, TransformerSerializer())
+                    .create()
+
             return Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(client)
                     .addConverterFactory(ScalarsConverterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()
 

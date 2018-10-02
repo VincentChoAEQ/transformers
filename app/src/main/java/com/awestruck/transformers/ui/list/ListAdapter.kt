@@ -5,9 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.awestruck.transformers.R
-import com.awestruck.transformers.model.LocalTransformer
 import com.awestruck.transformers.model.Transformer
-import com.awestruck.transformers.ui.StatView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.item_transformer.view.*
 
@@ -35,7 +33,7 @@ class ListAdapter(private val onClickListener: OnTransformerClickListener) : Rec
             }
 
             name.text = transformer.name
-            overall_rating.text = transformer.overallRating.toString()
+            overall_rating.text = transformer.total.toString()
 
 //            stats_container.removeAllViews()
 //

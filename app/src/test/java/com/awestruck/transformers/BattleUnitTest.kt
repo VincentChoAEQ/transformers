@@ -9,11 +9,6 @@ import com.awestruck.transformers.util.TEAM_DECEPTICON
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class BattleUnitTest {
 
     private val optimus = Transformer("Optimus Prime", 10, TEAM_AUTOBOT)
@@ -34,14 +29,14 @@ class BattleUnitTest {
 
     @Test
     fun `test is not leader`() {
-        val nonLeader = Transformer("other", 1, "A")
+        val nonLeader = Transformer("other", 1, TEAM_AUTOBOT)
         assertEquals(nonLeader.isLeader(), false)
     }
 
     @Test
     fun `test overall rating`() {
-        assertEquals(optimus.overallRating, 46)
-        assertEquals(predaking.overallRating, 42)
+        assertEquals(optimus.total, 46)
+        assertEquals(predaking.total, 42)
     }
 
     @Test
@@ -54,9 +49,9 @@ class BattleUnitTest {
 
     @Test
     fun `test is powering`() {
-        val overpowered = Transformer(name = "Overpowered", strength = 10, team = TEAM_AUTOBOT)
-        val underpowered = Transformer(name = "Underpowered", strength = 1, team = TEAM_DECEPTICON)
-        val even = Transformer(name = "Even", strength = 8, team = TEAM_AUTOBOT)
+        val overpowered = Transformer(name = "Overpowered", average = 10, team = TEAM_AUTOBOT)
+        val underpowered = Transformer(name = "Underpowered", average = 1, team = TEAM_DECEPTICON)
+        val even = Transformer(name = "Even", average = 8, team = TEAM_AUTOBOT)
 
         assertEquals(Battle.isOverpowering(overpowered, underpowered), true)
         assertEquals(Battle.isOverpowering(underpowered, overpowered), false)
@@ -66,9 +61,9 @@ class BattleUnitTest {
 
     @Test
     fun `test is intimidating`() {
-        val intimidating = Transformer(name = "Intimidating", courage = 10, team = TEAM_DECEPTICON)
-        val coward = Transformer(name = "Coward", courage = 1, team = TEAM_AUTOBOT)
-        val normal = Transformer(name = "Normal", courage = 7, team = TEAM_DECEPTICON)
+        val intimidating = Transformer(name = "Intimidating", average = 10, team = TEAM_DECEPTICON)
+        val coward = Transformer(name = "Coward", average = 1, team = TEAM_AUTOBOT)
+        val normal = Transformer(name = "Normal", average = 7, team = TEAM_DECEPTICON)
 
         assertEquals(Battle.isIntimidating(intimidating, coward), true)
         assertEquals(Battle.isIntimidating(coward, intimidating), false)
@@ -78,9 +73,9 @@ class BattleUnitTest {
 
     @Test
     fun `test is too skilled`() {
-        val skilled = Transformer(name = "Skilled", skill = 8, team = TEAM_DECEPTICON)
-        val unskilled = Transformer(name = "git gud", skill = 1, team = TEAM_AUTOBOT)
-        val normal = Transformer(name = "Normal", skill = 7, team = TEAM_DECEPTICON)
+        val skilled = Transformer(name = "Skilled", average = 8, team = TEAM_DECEPTICON)
+        val unskilled = Transformer(name = "git gud", average = 1, team = TEAM_AUTOBOT)
+        val normal = Transformer(name = "Normal", average = 7, team = TEAM_DECEPTICON)
 
         assertEquals(Battle.isTooSkilled(skilled, unskilled), true)
         assertEquals(Battle.isTooSkilled(unskilled, skilled), false)
@@ -90,9 +85,9 @@ class BattleUnitTest {
 
     @Test
     fun `test equal power`() {
-        val powerful = Transformer(name = "Powerful", strength = 10, intelligence = 10, speed = 7, endurance = 7, courage = 7, firepower = 10, skill = 8, team = TEAM_AUTOBOT)
-        val weak = Transformer(name = "Weak", strength = 1, intelligence = 1, speed = 1, endurance = 1, courage = 1, firepower = 1, skill = 1, team = TEAM_AUTOBOT)
-        val average = Transformer(name = "Average", strength = 5, intelligence = 5, speed = 5, endurance = 5, courage = 5, firepower = 5, skill = 5, team = TEAM_AUTOBOT)
+        val powerful = Transformer(name = "Powerful", average = 8, team = TEAM_AUTOBOT)
+        val weak = Transformer(name = "Weak", average = 1, team = TEAM_AUTOBOT)
+        val average = Transformer(name = "Average", average = 5, team = TEAM_AUTOBOT)
 
         assertEquals(Battle.equalPower(powerful, weak), false)
         assertEquals(Battle.equalPower(weak, powerful), false)
@@ -102,9 +97,9 @@ class BattleUnitTest {
 
     @Test
     fun `test is strong`() {
-        val powerful = Transformer(name = "Powerful", strength = 10, intelligence = 10, speed = 7, endurance = 7, courage = 7, firepower = 10, skill = 8, team = TEAM_AUTOBOT)
-        val weak = Transformer(name = "Weak", strength = 1, intelligence = 1, speed = 1, endurance = 1, courage = 1, firepower = 1, skill = 1, team = TEAM_AUTOBOT)
-        val average = Transformer(name = "Average", strength = 5, intelligence = 5, speed = 5, endurance = 5, courage = 5, firepower = 5, skill = 5, team = TEAM_AUTOBOT)
+        val powerful = Transformer(name = "Powerful", average = 8, team = TEAM_AUTOBOT)
+        val weak = Transformer(name = "Weak", average = 1, team = TEAM_AUTOBOT)
+        val average = Transformer(name = "Average", average = 5, team = TEAM_AUTOBOT)
 
         assertEquals(Battle.isStronger(powerful, weak), true)
         assertEquals(Battle.isStronger(weak, powerful), false)
@@ -114,9 +109,9 @@ class BattleUnitTest {
 
     @Test
     fun `test winner`() {
-        val powerful = Transformer(name = "Powerful", strength = 10, intelligence = 10, speed = 7, endurance = 7, courage = 7, firepower = 10, skill = 8, team = TEAM_AUTOBOT)
-        val weak = Transformer(name = "Weak", strength = 1, intelligence = 1, speed = 1, endurance = 1, courage = 1, firepower = 1, skill = 1, team = TEAM_DECEPTICON)
-        val average = Transformer(name = "Average", strength = 5, intelligence = 5, speed = 5, endurance = 5, courage = 5, firepower = 5, skill = 5, team = TEAM_DECEPTICON)
+        val powerful = Transformer(name = "Powerful", average = 8, team = TEAM_AUTOBOT)
+        val weak = Transformer(name = "Weak", average = 1, team = TEAM_DECEPTICON)
+        val average = Transformer(name = "Average", average = 5, team = TEAM_DECEPTICON)
 
 
         assertEquals(Battle.getWinner(powerful, weak), TEAM_AUTOBOT)
