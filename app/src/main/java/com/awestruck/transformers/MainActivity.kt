@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     transformers.postValue(it.transformers)
-                    showMain()
                 }, {
                     Logger.e(it, "Could not work.")
                 })

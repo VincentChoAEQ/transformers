@@ -60,11 +60,12 @@ class BattleAdapter(private val context: Context) : RecyclerView.Adapter<BattleA
         if (holder.itemViewType == TYPE_BATTLE) {
             val result = collection[position] as BattleResult
 
-            val span = if (result.result == NO_WINNER) {
-                getDrawSpan(result)
-            } else {
-                getWinnerSpan(result)
+            val span = when(result.result) {
+                MASS_EXTINCTION -> getMassExtinctionSpan(result)
+                NO_WINNER -> getDrawSpan(result)
+                else -> getWinnerSpan(result)
             }
+
 
             holder.view.name.text = span
         } else {
@@ -72,6 +73,22 @@ class BattleAdapter(private val context: Context) : RecyclerView.Adapter<BattleA
         }
 
 
+    }
+
+    private fun getMassExtinctionSpan(result: BattleResult): SpannableString {
+        val lhs = result.lhs.name
+        val rhs = result.rhs.name
+
+        val text = if( result.lhs.isLeader() && result.rhs.isLeader() ) {
+            "$lhs and $rhs encountered each other on the battlefield!\n\nThe destruction of their battle has destroyed everyone."
+        } else {
+            "$lhs and $rhs were destroyed in the blast."
+        }
+
+        val span = SpannableString(text)
+        setSpan(span, R.color.autobot_light, result.lhs.name)
+        setSpan(span, R.color.decepticon_light, result.rhs.name)
+        return span
     }
 
     private fun getDrawSpan(result: BattleResult): SpannableString {

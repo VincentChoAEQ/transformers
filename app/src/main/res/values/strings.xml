@@ -47,4 +47,7 @@
     <string name="battle_start">BEGIN BATTLE</string>
     <string name="battle_mass_extinction">MASS EXTINCTION</string>
     <string name="battle_end">BATTLE END</string>
+    <string name="battle_draw">DRAW</string>
+    <string name="battle_victory_autobots">AUTOBOTS WIN</string>
+    <string name="battle_victory_decepticons">DECEPTICONS WIN</string>
 </resources>

@@ -39,7 +39,7 @@ class Battle(transformers: List<Transformer>) {
                 getWinner(autobot, decepticon)
             }
 
-            if (winner == MASS_EXTINCTION) {
+            if (winner == MASS_EXTINCTION && autobot.isLeader() && decepticon.isLeader()) {
                 isMassExtinction = true
                 results.add(0, BattleResult(autobot, decepticon, winner))
                 results.forEach { it.result = MASS_EXTINCTION }
@@ -48,8 +48,8 @@ class Battle(transformers: List<Transformer>) {
             }
         }
 
-        val lhs = results.count { it.result == TEAM_AUTOBOT }
-        val rhs = results.count { it.result == TEAM_DECEPTICON }
+        val lhs = results.count { it.result == TEAM_AUTOBOT || it.result == NO_WINNER || it.result == MASS_EXTINCTION }
+        val rhs = results.count { it.result == TEAM_DECEPTICON || it.result == NO_WINNER || it.result == MASS_EXTINCTION }
 
         victor = when {
             isMassExtinction -> MASS_EXTINCTION

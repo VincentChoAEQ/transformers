@@ -60,7 +60,7 @@ class BattleActivity : AppCompatActivity() {
 
         adapter = BattleAdapter(this)
 
-        list.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, true)
+        list.layoutManager = LinearLayoutManager(this)
         list.adapter = adapter
 
         var index = 0
@@ -76,9 +76,6 @@ class BattleActivity : AppCompatActivity() {
                 runOnUiThread {
                     val result = battle.results[index]
 
-                    if(result.result == MASS_EXTINCTION) {
-                        adapter.addNotification(BattleAdapter.BattleNotification(getString(R.string.battle_mass_extinction)))
-                    }
                     adapter.addBattle(result)
 
                     when (result.result) {
@@ -117,7 +114,16 @@ class BattleActivity : AppCompatActivity() {
     }
 
     private fun announceWinner(battle: Battle) {
-        Toast.makeText(this, battle.victor, Toast.LENGTH_SHORT).show()
+
+        val text = when (battle.victor) {
+            MASS_EXTINCTION -> getString(R.string.battle_mass_extinction)
+            TEAM_AUTOBOT -> getString(R.string.battle_victory_autobots)
+            TEAM_DECEPTICON -> getString(R.string.battle_victory_decepticons)
+            else -> getString(R.string.battle_draw)
+
+        }
+
+        adapter.addNotification(BattleAdapter.BattleNotification(text))
     }
 
     internal class BattleViewModelFactory(private val transformers: List<Transformer>) : ViewModelProvider.NewInstanceFactory() {
