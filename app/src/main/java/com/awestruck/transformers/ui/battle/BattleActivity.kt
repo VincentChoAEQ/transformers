@@ -52,8 +52,7 @@ class BattleActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        val elements = MainActivity.transformers.value
-                ?: Array(30) { Transformer().also { it.randomize() } }.toList()
+        val elements = MainActivity.transformers.value ?: emptyList()
         viewModel = ViewModelProviders.of(this, BattleViewModelFactory(elements)).get(BattleViewModel::class.java)
 
         val battle = viewModel.battle
