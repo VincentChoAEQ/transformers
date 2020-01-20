@@ -15,11 +15,11 @@ object Preferences {
     private val preferences: SharedPreferences = App.application.getSharedPreferences(PREF, Activity.MODE_PRIVATE)
 
     var token: String?
-        get() = preferences.getString(AUTH_TOKEN, null)
+        get() = preferences.getString(AUTH_TOKEN, "")
         set(value) = preferences.edit().putString(AUTH_TOKEN, value).apply()
 
     val isNewUser: Boolean
-        get() = token == null
+        get() = token == ""
 
 
 }

@@ -13,6 +13,8 @@ import android.transition.TransitionManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.PopupMenu
 import android.widget.SeekBar
 import android.widget.Toast
@@ -20,20 +22,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import com.awestruck.transformers.MainActivity
+import androidx.lifecycle.observe
 import com.awestruck.transformers.R
 import com.awestruck.transformers.model.Transformer
-import com.awestruck.transformers.networking.TransformerService
 import com.awestruck.transformers.ui.StatView
 import com.awestruck.transformers.util.TEAM_AUTOBOT
 import com.awestruck.transformers.util.TEAM_DECEPTICON
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.details_activity.*
 import kotlinx.android.synthetic.main.view_stat.view.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
@@ -49,8 +46,7 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         }
     }
 
-    private lateinit var viewModel: DetailsViewModel
-
+    private val viewModel by viewModel<DetailsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +54,31 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
         val transformer = intent.getSerializableExtra(EXTRA_TRANSFORMER) as? Transformer
 
-        viewModel = ViewModelProviders.of(this, DetailsViewModelFactory(transformer)).get(DetailsViewModel::class.java)
+        if(transformer == null){
+            viewModel.transformer = Transformer()
+        } else {
+            viewModel.transformer = transformer
+        }
+
+        viewModel.start()
+
         viewModel.state.observe(this, Observer {
             setEditMode(it)
         })
+
+        viewModel.spinner.observe(this) { value ->
+            value.let { show ->
+                progressBar.visibility = if (show) VISIBLE else GONE
+                close.visibility = if (show) GONE else VISIBLE
+            }
+        }
+
+        viewModel.snackbar.observe(this) { text ->
+            text?.let {
+                Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+                viewModel.onSnackbarShown()
+            }
+        }
 
         icon_decepticon.setOnClickListener {
             selectTeam(TEAM_DECEPTICON)
@@ -161,7 +178,6 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         val startSide = if (team == TEAM_AUTOBOT) ConstraintSet.START else ConstraintSet.END
         val endSide = if (team == TEAM_AUTOBOT) ConstraintSet.END else ConstraintSet.START
 
-
         val size = resources.getDimension(R.dimen.icon_size).toInt()
         val smallSize = resources.getDimension(R.dimen.icon_size_small).toInt()
         val margin = resources.getDimension(R.dimen.icon_margin).toInt()
@@ -177,8 +193,6 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         constraint.constrainWidth(unselected, smallSize)
         constraint.centerVertically(unselected, R.id.icons_container)
         constraint.connect(unselected, startSide, selected, endSide, margin)
-
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             TransitionManager.beginDelayedTransition(icons_container)
@@ -202,23 +216,11 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     }
 
     private fun deleteTransformer() {
+        if (viewModel.transformer.id.isNullOrEmpty())
+            return
 
-        val id = viewModel.transformer.id ?: return
-
-        TransformerService.create()
-                .delete(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Toast.makeText(this, "Deleted", Toast.LENGTH_SHORT).show()
-                    MainActivity.deleteTransformer(id)
-                    finish()
-                }, {
-                    Toast.makeText(this, "Error while deleting the transformer", Toast.LENGTH_SHORT).show()
-                    MainActivity.deleteTransformer(id)
-                    finish()
-                })
-
+        viewModel.deleteTransformer(viewModel.transformer)
+        finish()
     }
 
     private fun saveTransformer() {
@@ -229,39 +231,21 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
             return
         }
 
-        if (transformer.id != null) {
-            updateTransformer(transformer)
-        } else {
+        if (transformer.id.isNullOrEmpty()) {
             createTransformer(transformer)
+        } else {
+            updateTransformer(transformer)
         }
     }
 
     private fun createTransformer(transformer: Transformer) {
-        TransformerService.create()
-                .add(transformer)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
-                    MainActivity.addTransformer(it)
-                    viewModel.state.postValue(DetailsViewModel.STATE_VIEW)
-                }, {
-                    Toast.makeText(this, "Could not create the transformer", Toast.LENGTH_SHORT).show()
-                })
+        viewModel.createTransformer(transformer)
+        viewModel.state.postValue(DetailsViewModel.STATE_VIEW)
     }
 
     private fun updateTransformer(transformer: Transformer) {
-        TransformerService.create()
-                .update(transformer)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
-                    MainActivity.updateTransformer(it)
-                    viewModel.state.postValue(DetailsViewModel.STATE_VIEW)
-                }, {
-                    Toast.makeText(this, "Could not update the transformer", Toast.LENGTH_SHORT).show()
-                })
+        viewModel.updateTransformer(transformer)
+        viewModel.state.postValue(DetailsViewModel.STATE_VIEW)
     }
 
     private fun setEditMode(state: Int) {
@@ -316,9 +300,9 @@ class DetailsActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     }
 
 
-    internal class DetailsViewModelFactory(private val transformer: Transformer?) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return DetailsViewModel(transformer) as T
-        }
-    }
+//    internal class DetailsViewModelFactory(private val transformer: Transformer?) : ViewModelProvider.NewInstanceFactory() {
+//        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+//            return DetailsViewModel(transformer) as T
+//        }
+//    }
 }

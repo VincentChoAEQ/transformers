@@ -1,10 +1,26 @@
 package com.awestruck.transformers.ui.details
 
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.awestruck.transformers.data.RepositoryOperationError
+import com.awestruck.transformers.data.TransformerRepository
 import com.awestruck.transformers.model.Transformer
+import kotlinx.coroutines.launch
 
-class DetailsViewModel(arg: Transformer?) : ViewModel() {
+class DetailsViewModel constructor(val repository: TransformerRepository) : ViewModel() {
+
+    lateinit var transformer : Transformer
+
+    private val _spinner = MutableLiveData<Boolean>(false)
+    val spinner: LiveData<Boolean>
+        get() = _spinner
+
+    private val _snackBar = MutableLiveData<String?>()
+    val snackbar: LiveData<String?>
+        get() = _snackBar
+
+    fun onSnackbarShown() {
+        _snackBar.value = null
+    }
 
     companion object {
         const val STATE_CREATE = 0
@@ -12,15 +28,42 @@ class DetailsViewModel(arg: Transformer?) : ViewModel() {
         const val STATE_EDIT = 2
     }
 
+    fun createTransformer(t: Transformer){
+        launchCoroutine("Saved"){
+            repository.createTransformer(t)
+        }
+    }
+
+    fun updateTransformer(t: Transformer){
+        launchCoroutine("Saved"){
+            repository.updateTransformer(t)
+        }
+    }
+
+    fun deleteTransformer(t: Transformer){
+        launchCoroutine("Deleted"){
+            repository.deleteTransformer(t)
+        }
+    }
+
+    private fun launchCoroutine(mesg: String, block: suspend () -> Unit): Unit {
+        viewModelScope.launch {
+            try {
+                _spinner.value = true
+                block()
+            } catch (error: RepositoryOperationError) {
+                _snackBar.value = error.message
+            } finally {
+                _snackBar.value = mesg
+                _spinner.value = false
+            }
+        }
+    }
+
     val state = MediatorLiveData<Int>()
 
-    var transformer = arg ?: Transformer()
-
-    val isEditing: Boolean
-        get() = state.value == STATE_CREATE || state.value == STATE_EDIT
-
-    init {
-        state.value = if (transformer.id != null) STATE_VIEW else STATE_CREATE
+    fun start() {
+        state.value = if (transformer.id.isNullOrEmpty()) STATE_CREATE else STATE_VIEW
     }
 
 }

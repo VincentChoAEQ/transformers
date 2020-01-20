@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Transformers.iml" filepath="$PROJECT_DIR$/Transformers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/advice-dog-transformers.iml" filepath="$PROJECT_DIR$/advice-dog-transformers.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/transformers.iml" filepath="$PROJECT_DIR$/transformers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/transformers-app.iml" filepath="$PROJECT_DIR$/app/transformers-app.iml" />
     </modules>
   </component>
 </project>

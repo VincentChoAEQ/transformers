@@ -13,13 +13,20 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.awestruck.transformers.MainActivity
 import com.awestruck.transformers.R
+import com.awestruck.transformers.model.Transformer
+import com.awestruck.transformers.model.Transformers
 import com.awestruck.transformers.ui.list.ListFragment
+import com.awestruck.transformers.ui.main.MainViewModel
+import com.awestruck.transformers.util.Preferences
 import com.awestruck.transformers.util.TEAM_AUTOBOT
 import com.awestruck.transformers.util.TEAM_DECEPTICON
+import com.orhanobut.logger.Logger
 import kotlinx.android.synthetic.main.main_fragment.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainFragment : Fragment() {
@@ -34,6 +41,9 @@ class MainFragment : Fragment() {
 
         fun newInstance() = MainFragment()
     }
+
+    private val viewModel : MainViewModel by viewModel()
+    private var transformers: List<Transformer>? = null
 
     private var currentTeam = TEAM_AUTOBOT
 
@@ -68,8 +78,14 @@ class MainFragment : Fragment() {
             }
         })
 
+        viewModel.transformers.observe(this, Observer {
+            transformers = it.data
+        })
+
         battle.setOnClickListener {
-            (activity as? MainActivity)?.startBattle()
+            transformers?.let {
+                (activity as? MainActivity)?.startBattle(Transformers(it))
+            }
         }
     }
 

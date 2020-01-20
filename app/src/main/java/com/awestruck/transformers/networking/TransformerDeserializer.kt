@@ -1,5 +1,6 @@
 package com.awestruck.transformers.networking
 
+import com.awestruck.transformers.model.Specs
 import com.awestruck.transformers.model.Transformer
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -14,12 +15,12 @@ class TransformerDeserializer : JsonDeserializer<Transformer> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Transformer {
         val obj = json.asJsonObject
 
-        val id = obj.get("id")?.asString
+        val id = obj.get("id")?.asString ?: ""
         val name = obj.get("name").asString
         val team = obj.get("team").asString
         val icon = obj.get("icon")?.asString
 
-        val specs = Transformer.Specs(
+        val specs = Specs(
                 obj.get("strength").asInt,
                 obj.get("intelligence").asInt,
                 obj.get("speed").asInt,

@@ -2,13 +2,19 @@ package com.awestruck.transformers.ui.battle
 
 import androidx.lifecycle.ViewModel
 import com.awestruck.transformers.model.Battle
-import com.awestruck.transformers.model.Transformer
+import com.awestruck.transformers.model.Transformers
 
 /**
  * Created by Chris on 2018-10-01.
  */
-class BattleViewModel(transformers: List<Transformer>) : ViewModel() {
+class BattleViewModel() : ViewModel() {
 
-    val battle = Battle(transformers)
+    lateinit var battle: Battle
+
+    fun start(transformers : Transformers){
+        battle = Battle(transformers.transformers)
+    }
+
+
 
 }

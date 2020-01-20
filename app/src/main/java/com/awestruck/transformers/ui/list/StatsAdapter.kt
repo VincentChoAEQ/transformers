@@ -5,13 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.awestruck.transformers.R
+import com.awestruck.transformers.model.Specs
 import com.awestruck.transformers.model.Transformer
 import kotlinx.android.synthetic.main.item_stats.view.*
 
 /**
  * Created by Chris on 2018-10-01.
  */
-class StatsAdapter(private val specs: Transformer.Specs) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
+class StatsAdapter(private val specs: Specs) : RecyclerView.Adapter<StatsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_stats, parent, false)

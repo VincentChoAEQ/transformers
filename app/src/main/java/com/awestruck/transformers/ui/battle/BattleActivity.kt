@@ -3,25 +3,21 @@ package com.awestruck.transformers.ui.battle
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.awestruck.transformers.MainActivity
 import com.awestruck.transformers.R
 import com.awestruck.transformers.model.Battle
-import com.awestruck.transformers.model.Transformer
+import com.awestruck.transformers.model.Transformers
+import com.awestruck.transformers.ui.details.DetailsActivity
 import com.awestruck.transformers.util.MASS_EXTINCTION
 import com.awestruck.transformers.util.NO_WINNER
 import com.awestruck.transformers.util.TEAM_AUTOBOT
 import com.awestruck.transformers.util.TEAM_DECEPTICON
 import kotlinx.android.synthetic.main.battle_activity.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-
 
 /**
  * Created by Chris on 2018-10-01.
@@ -31,14 +27,21 @@ class BattleActivity : AppCompatActivity() {
     companion object {
         private const val BATTLE_DELAY = 1250L
         private const val BATTLE_DELAY_MASS_EXTINCTION = 250L
+        private const val EXTRA_TRANSFORMERS = "EXTRA_TRANSFORMERS"
 
         fun startActivity(context: Context) {
             val intent = Intent(context, BattleActivity::class.java)
             context.startActivity(intent)
         }
+
+        fun startActivity(context: Context, transformers: Transformers?) {
+            val intent = Intent(context, BattleActivity::class.java)
+            intent.putExtra(BattleActivity.EXTRA_TRANSFORMERS, transformers)
+            context.startActivity(intent)
+        }
     }
 
-    private lateinit var viewModel: BattleViewModel
+    private val viewModel by viewModel<BattleViewModel>()
     private lateinit var adapter: BattleAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +55,11 @@ class BattleActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        val elements = MainActivity.transformers.value ?: emptyList()
-        viewModel = ViewModelProviders.of(this, BattleViewModelFactory(elements)).get(BattleViewModel::class.java)
+        val transformers = intent.getSerializableExtra(BattleActivity.EXTRA_TRANSFORMERS) as? Transformers
+
+        transformers?.let{
+            viewModel.start(it)
+        }
 
         val battle = viewModel.battle
 
@@ -61,8 +67,6 @@ class BattleActivity : AppCompatActivity() {
 
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = adapter
-
-
 
         if (battle.results.size == 0) {
             adapter.addNotification(BattleAdapter.BattleNotification(getString(R.string.battle_empty)))
@@ -133,11 +137,5 @@ class BattleActivity : AppCompatActivity() {
         }
 
         adapter.addNotification(BattleAdapter.BattleNotification(text))
-    }
-
-    internal class BattleViewModelFactory(private val transformers: List<Transformer>) : ViewModelProvider.NewInstanceFactory() {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return BattleViewModel(transformers) as T
-        }
     }
 }
